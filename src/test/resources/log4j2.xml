@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">  
+	• Configuration：为根节点，有status和monitorInterval等多个属性
+		○ status的值有 “trace”, “debug”, “info”, “warn”, “error” and “fatal”，用于控制log4j2日志框架本身的日志级别，如果将stratus设置为较低的级别就会看到很多关于log4j2本身的日志，如加载log4j2配置文件的路径等信息
+		○ monitorInterval，含义是每隔多少秒重新读取配置文件，可以不重启应用的情况下修改配置
+    <Appenders>  
+        <Console name="Console" target="SYSTEM_OUT">  
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+        </Console>  
+    </Appenders>  
+
+    <Loggers>  
+        <Root level="info">  
+            <AppenderRef ref="Console" />  
+        </Root>  
+    </Loggers>  
+</Configuration> 
+-->
+
+<!-- <?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">  
+    <Appenders>  
+        <Console name="Console" target="SYSTEM_OUT">  
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+        </Console>
+
+        <File name="FileAppender" fileName="D:/logs/app.log">  
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+        </File>  
+
+        发现Async 好像PatternLayout的输出格式配置的和输出的格式不一样，不用异步就完全一样 
+        <Async name="AsyncAppender">
+        <AppenderRef ref="FileAppender"/>
+        </Async>
+    </Appenders>  
+
+    <Loggers>  
+        <Logger name="AsyncFileLogger" level="trace" additivity="true">  
+        AsyncFileLogger的additivity的值如果为false的话，就不会在控制台上输出或者为该Logger再增加一个输出源Consloe
+            <AppenderRef ref="AsyncAppender" />  
+        </Logger>
+        <Root level="info">  
+            <AppenderRef ref="Console" />  
+        </Root>  
+    </Loggers>  
+</Configuration> -->
+
+
+
+
+
+<Configuration status="WARN"> 
+    <properties>
+        <property name="LOG_HOME">D:/logs</property>
+        <property name="FILE_NAME">log</property>
+    </properties>
+
+    <Appenders>  
+        <Console name="Console" target="SYSTEM_OUT">  
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+        </Console>
+
+        <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingRandomAccessFile>
+
+        <Async name="AsyncAppender">
+            <AppenderRef ref="RollingRandomAccessFile"/>
+        </Async>
+    </Appenders>  
+
+    <Loggers>  
+        <Logger name="RollingRandomAccessFileLogger" level="info" additivity="false">  
+            <AppenderRef ref="AsyncAppender" />  
+            <AppenderRef ref="Console" />  
+        </Logger>
+    </Loggers>  
+</Configuration>
